@@ -34,6 +34,13 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
+/**
+ * Render a login form with email/password validation and submission handling.
+ *
+ * The component displays social login placeholders, email and password fields validated by the configured schema, disables inputs while submitting, initiates an email/password sign-in flow, shows success or error toasts, and redirects to the home page on successful login.
+ *
+ * @returns The login form React element
+ */
 export function LoginForm() {
   const router = useRouter(); 
   const form = useForm<LoginFormValues>({
