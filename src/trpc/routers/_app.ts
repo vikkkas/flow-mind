@@ -1,5 +1,5 @@
 import prisma from '@/lib/db';
-import { baseProcedure, createTRPCRouter, protectedProcedure } from '../init';
+import {  createTRPCRouter, protectedProcedure } from '../init';
 
 export const appRouter = createTRPCRouter({
   getUsers: protectedProcedure.query(({ctx})=>{
