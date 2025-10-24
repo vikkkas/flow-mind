@@ -22,6 +22,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
+import { useHasActiveSubscription } from "@/features/subscription/hooks/use-subsription";
 
 const menuItems = [
   {
@@ -47,13 +48,14 @@ const menuItems = [
 ];
 
 export const AppSidebar = () => {
-    const router = useRouter();
-    const pathname = usePathname();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { hasActiveSubscription, isLoading } = useHasActiveSubscription();
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenuItem>
-          <SidebarMenuButton asChild className="gap-x-4 h-10 px-4">
+          <SidebarMenuButton asChild className="h-10 px-4 gap-x-4">
             <Link href="/workflows" prefetch>
               <Image
                 src="/logo/logo.svg"
@@ -61,12 +63,11 @@ export const AppSidebar = () => {
                 width={30}
                 height={30}
               />
-              <span className="font-semibold text-sm">Flowmind</span>
+              <span className="text-sm font-semibold">Flowmind</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarHeader>
-
 
       <SidebarContent>
         {menuItems.map((group) => (
@@ -77,11 +78,13 @@ export const AppSidebar = () => {
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       isActive={
-                        item.url === "/" ? pathname === "/" : pathname.startsWith(item.url) 
+                        item.url === "/"
+                          ? pathname === "/"
+                          : pathname.startsWith(item.url)
                       }
                       tooltip={item.title}
                       asChild
-                      className="gap-x-4 h-10 px-4"
+                      className="h-10 px-4 gap-x-4"
                     >
                       <Link href={item.url} prefetch>
                         <item.icon className="size-4" />
@@ -98,41 +101,47 @@ export const AppSidebar = () => {
 
       <SidebarFooter>
         <SidebarMenu>
+          {!isLoading && !hasActiveSubscription && (
             <SidebarMenuItem>
-                <SidebarMenuButton
-                    tooltip="Upgrade to Pro"
-                    className="gap-x-4 h-10 px-4"
-                    onClick={()=> {}}
-                >
-                    <StarIcon className="size-4" />
-                    <span>Upgrade to Pro</span>
-                </SidebarMenuButton>
+              <SidebarMenuButton
+                tooltip="Upgrade to Pro"
+                className="h-10 px-4 gap-x-4"
+                onClick={() => {
+                  authClient.checkout({ slug: "Flowmind-Pro" });
+                }}
+              >
+                <StarIcon className="size-4" />
+                <span>Upgrade to Pro</span>
+              </SidebarMenuButton>
             </SidebarMenuItem>
-            <SidebarMenuItem>
-                <SidebarMenuButton
-                    tooltip="Billing Portal"
-                    className="gap-x-4 h-10 px-4"
-                    onClick={()=> {}}
-                >
-                    <CreditCardIcon className="size-4" />
-                    <span>Billing Portal</span>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-                <SidebarMenuButton
-                    tooltip="Sign Out"
-                    className="gap-x-4 h-10 px-4"
-                    onClick={async ()=> {
-                        const result = await authClient.signOut();
-                        if (result) {
-                            router.push("/login");
-                        }
-                    }}
-                >
-                    <LogOutIcon className="size-4" />
-                    <span>Sign Out</span>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
+          )}
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip="Billing Portal"
+              className="h-10 px-4 gap-x-4"
+              onClick={() => {
+                authClient.customer.portal();
+              }}
+            >
+              <CreditCardIcon className="size-4" />
+              <span>Billing Portal</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip="Sign Out"
+              className="h-10 px-4 gap-x-4"
+              onClick={async () => {
+                const result = await authClient.signOut();
+                if (result) {
+                  router.push("/login");
+                }
+              }}
+            >
+              <LogOutIcon className="size-4" />
+              <span>Sign Out</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
