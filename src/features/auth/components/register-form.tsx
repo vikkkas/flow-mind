@@ -163,7 +163,7 @@ export function RegisterForm() {
                     Sign Up
                   </Button>
 
-                  <div className="text-center text-sm">
+                  <div className="text-sm text-center">
                     Don&apos;t have an account?{" "}
                     <Link
                       href="/login"
