@@ -1,5 +1,6 @@
-import { Link, PlusIcon } from "lucide-react";
+import { Link, PlusIcon, SearchIcon } from "lucide-react";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 type EntityHeaderProps = {
   title: string;
@@ -60,7 +61,7 @@ export const EntityContainer = ({
   pagination,
 }: EntityContainerProps) => {
   return (
-    <div className="p-4 md:px-10 md:py-6 h-full">
+    <div className="p-4 md:px-10 md:py-6 h-full flex flex-col">
       <div className="mx-auto max-w-screen-xl w-full flex flex-col gap-y-8 h-full">
         {header}
         <div className="flex flex-col gap-y-4 h-full">
@@ -68,6 +69,72 @@ export const EntityContainer = ({
           {children}
         </div>
         {pagination}
+      </div>
+    </div>
+  );
+};
+
+interface EntitySearchProps {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}
+
+export const EntitySearch = ({
+  value,
+  onChange,
+  placeholder = "Search...",
+}: EntitySearchProps) => {
+  return (
+    <div className="relative">
+      <SearchIcon className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+      <Input
+        className="max-w-[200px] pl-8 bg-background shadow-none border-border"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </div>
+  );
+};
+
+interface EntityPaginationProps {
+  page: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  disabled?: boolean;
+}
+
+export const EntityPagination = ({
+  page,
+  totalPages,
+  onPageChange,
+  disabled,
+}: EntityPaginationProps) => {
+  return (
+    <div className="flex items-center justify-center gap-x-2 w-full">
+      <div className="flex-1 text-sm text-muted-foreground">
+        Page {page} of {totalPages || 1}
+      </div>
+
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <Button
+          disabled={disabled || page === 1}
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(Math.max(1, page - 1))}
+        >
+          Previous
+        </Button>
+
+        <Button
+          disabled={disabled || page === totalPages || totalPages === 0}
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(Math.min(totalPages, page + 1))}
+        >
+          Next
+        </Button>
       </div>
     </div>
   );

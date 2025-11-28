@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 import { useHasActiveSubscription } from "@/features/subscription/hooks/use-subsription";
+import { toast } from "sonner";
 
 const menuItems = [
   {
@@ -115,18 +116,26 @@ export const AppSidebar = () => {
               </SidebarMenuButton>
             </SidebarMenuItem>
           )}
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              tooltip="Billing Portal"
-              className="h-10 px-4 gap-x-4"
-              onClick={() => {
-                authClient.customer.portal();
-              }}
-            >
-              <CreditCardIcon className="size-4" />
-              <span>Billing Portal</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          {!isLoading && hasActiveSubscription && (
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                tooltip="Billing Portal"
+                className="h-10 px-4 gap-x-4"
+                onClick={async () => {
+                  try {
+                    await authClient.customer.portal();
+                  } catch (error: any) {
+                    toast.error(
+                      error?.message || "Failed to open billing portal"
+                    );
+                  }
+                }}
+              >
+                <CreditCardIcon className="size-4" />
+                <span>Billing Portal</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip="Sign Out"
