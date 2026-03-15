@@ -6,6 +6,8 @@ import { prefetchWorkflows } from "@/features/workflows/server/prefetch";
 import {
   WorkflowList,
   WorkflowsContainer,
+  WorkflowsError,
+  WorkflowsLoading,
 } from "@/features/workflows/components/workflows";
 import type { SearchParams } from "nuqs/server";
 import { workflowsParamsLoader } from "@/features/workflows/server/params-loader";
@@ -18,14 +20,14 @@ export const page = async ({searchParams} :Props) => {
   await requireAuth();
   
   const params = await workflowsParamsLoader(searchParams);
-  
+ 
   prefetchWorkflows(params);
 
   return (
     <WorkflowsContainer>
       <HydrateClient>
-        <ErrorBoundary fallback={<div>Error loading workflows.</div>}>
-          <Suspense fallback={<div>Loading workflows...</div>}>
+        <ErrorBoundary fallback={<WorkflowsError />}>
+          <Suspense fallback={<WorkflowsLoading />}>
             <WorkflowList />
           </Suspense>
         </ErrorBoundary>
